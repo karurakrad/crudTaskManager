@@ -28,22 +28,10 @@
             <!-- Tasks will be dynamically added here -->
         </div>
     </section>
+    <br>
     <footer>
         <p>&copy; 2023 Task Manager</p>
     </footer>
-    <!-- Hidden form for editing tasks  -->
-    <div class="task-form" id="editTaskForm" style="display: none;">
-        <h2>Edit Task</h2>
-        <input type="text" id="editTaskName" placeholder="Task Name">
-        <textarea id="editTaskDescription" placeholder="Task Description"></textarea>
-        <input type="datetime-local" id="editTaskDateTime">
-        <select id="editTaskPriority">
-            <option value="urgent">Urgent</option>
-            <option value="important">Important</option>
-            <option value="pending">Pending</option>
-        </select>
-        <button id="updateTaskBtn">Update Task</button>
-    </div>
     <script src="script.js"></script>
 </body>
 </html>

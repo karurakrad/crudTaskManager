@@ -6,19 +6,13 @@ const taskPriorityInput = document.getElementById("taskPriority");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
 
-// Variables for edit form and task list.
-const editTaskForm = document.getElementById("editTaskForm");
-const editTaskNameInput = document.getElementById("editTaskName");
-const editTaskDescriptionInput = document.getElementById("editTaskDescription");
-const editTaskDateTimeInput = document.getElementById("editTaskDateTime");
-const editTaskPriorityInput = document.getElementById("editTaskPriority");
-const updateTaskBtn = document.getElementById("updateTaskBtn");
-let editingTask = null; // Stores the task currently being edited.
+// Global variable to track the task being edited
+let editingTaskDiv = null;
 
 // Event listener for adding tasks
 addTaskBtn.addEventListener("click", addTask);
 
-// Click event on the "Add Task" button.
+// Add a new task or update an existing one
 function addTask() {
     const taskName = taskNameInput.value;
     const taskDescription = taskDescriptionInput.value;
@@ -30,28 +24,44 @@ function addTask() {
         return;
     }
 
-    const taskDiv = document.createElement("div");
-    taskDiv.classList.add("task", taskPriority);
-    taskDiv.innerHTML = `
-        <div class="task-details">
-            <h3>${taskName}</h3>
-            <p>${taskDescription}</p>
-            <p>${taskDateTime}</p>
-        </div>
-        <div class="task-buttons">
-            <button class="edit-btn">Edit</button>
-            <button class="complete-btn">Complete</button>
-        </div>
-    `;
+    if (editingTaskDiv) {
+        // Update an existing task
+        const taskDetails = editingTaskDiv.querySelector(".task-details");
+        taskDetails.querySelector("h3").textContent = taskName;
+        taskDetails.querySelectorAll("p")[0].textContent = taskDescription;
+        taskDetails.querySelectorAll("p")[1].textContent = taskDateTime;
 
-    // Attach event listeners to the task buttons
-    const editBtn = taskDiv.querySelector(".edit-btn");
-    editBtn.addEventListener("click", () => editTask(taskDiv));
+        // Update the priority class
+        editingTaskDiv.classList.remove("urgent", "important", "pending");
+        editingTaskDiv.classList.add(taskPriority);
 
-    const completeBtn = taskDiv.querySelector(".complete-btn");
-    completeBtn.addEventListener("click", () => completeTask(taskDiv));
+        // Reset the editing task
+        editingTaskDiv = null;
+    } else {
+        // Add a new task
+        const taskDiv = document.createElement("div");
+        taskDiv.classList.add("task", taskPriority); // Add priority class for background color
+        taskDiv.innerHTML = `
+            <div class="task-details">
+                <h3>${taskName}</h3>
+                <p>${taskDescription}</p>
+                <p>${taskDateTime}</p>
+            </div>
+            <div class="task-buttons">
+                <button class="edit-btn">Edit</button>
+                <button class="complete-btn">Complete</button>
+            </div>
+        `;
 
-    taskList.appendChild(taskDiv);
+        // Attach event listeners to the task buttons
+        const editBtn = taskDiv.querySelector(".edit-btn");
+        editBtn.addEventListener("click", () => editTask(taskDiv));
+
+        const completeBtn = taskDiv.querySelector(".complete-btn");
+        completeBtn.addEventListener("click", () => completeTask(taskDiv));
+
+        taskList.appendChild(taskDiv);
+    }
 
     // Clear input fields
     taskNameInput.value = "";
@@ -59,119 +69,94 @@ function addTask() {
     taskDateTimeInput.value = "";
     taskPriorityInput.value = "urgent";
 
-    // Updates Local Storage
-    updateLocalStorage();
+    // Save tasks to local storage
+    saveTasksToLocalStorage();
 }
 
-// Click event on the "Complete" button of an existing task
+// Edit a task
 function editTask(taskDiv) {
+    // Populate the input fields with the task details for editing
     const taskDetails = taskDiv.querySelector(".task-details");
     const taskName = taskDetails.querySelector("h3").textContent;
-    const taskDescription = taskDetails.querySelector("p:nth-child(2)").textContent;
-    const taskDateTime = taskDetails.querySelector("p:nth-child(3)").textContent;
-    const taskPriority = taskDiv.classList[1];
+    const taskDescription = taskDetails.querySelectorAll("p")[0].textContent;
+    const taskDateTime = taskDetails.querySelectorAll("p")[1].textContent;
+    const taskPriority = taskDiv.classList[1]; // Get priority class
 
-    // Fills the edit form with the task data
-    editTaskNameInput.value = taskName;
-    editTaskDescriptionInput.value = taskDescription;
-    editTaskDateTimeInput.value = taskDateTime;
-    editTaskPriorityInput.value = taskPriority;
+    taskNameInput.value = taskName;
+    taskDescriptionInput.value = taskDescription;
+    taskDateTimeInput.value = taskDateTime;
+    taskPriorityInput.value = taskPriority;
 
-    // Displays the edit form and stores the task being edited
-    editTaskForm.style.display = "block";
-    editingTask = taskDiv;
-
-    // Adds a click event to update the task
-    updateTaskBtn.addEventListener("click", updateTask);
+    // Save a reference to the task being edited
+    editingTaskDiv = taskDiv;
 }
 
-// Click event on the "Update Task" button in the edit form
-function updateTask() {
-    const taskName = editTaskNameInput.value;
-    const taskDescription = editTaskDescriptionInput.value;
-    const taskDateTime = editTaskDateTimeInput.value;
-    const taskPriority = editTaskPriorityInput.value;
-
-    if (!taskName || !taskDateTime) {
-        alert("Please fill in both task name and date/time.");
-        return;
-    }
-
-    const taskDetails = editingTask.querySelector(".task-details");
-    taskDetails.querySelector("h3").textContent = taskName;
-    taskDetails.querySelector("p:nth-child(2)").textContent = taskDescription;
-    taskDetails.querySelector("p:nth-child(3)").textContent = taskDateTime;
-
-    editingTask.classList.remove("urgent", "important", "pending");
-    editingTask.classList.add(taskPriority);
-
-    editTaskForm.style.display = "none";
-    editingTask = null;
-
-    editTaskNameInput.value = "";
-    editTaskDescriptionInput.value = "";
-    editTaskDateTimeInput.value = "";
-    editTaskPriorityInput.value = "urgent";
-
-    // Updates Local Storage
-    updateLocalStorage();
-}
-
-// Click the event on the "Complete" button of an existing task
+// Complete a task and remove it from the list
 function completeTask(taskDiv) {
     taskList.removeChild(taskDiv);
-    updateLocalStorage();
+
+    // Save tasks to local storage after completing a task
+    saveTasksToLocalStorage();
 }
 
-// Load tasks from Local Storage when loading the page
+// Load saved tasks on page load (if available)
 window.addEventListener("load", () => {
-    const tasks = getTasksFromLocalStorage();
-    tasks.forEach(task => {
-        addTaskToUI(task);
+    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    savedTasks.forEach(taskData => {
+        const taskDiv = document.createElement("div");
+        taskDiv.classList.add("task");
+        taskDiv.classList.add(taskData.taskPriority); // Add priority class
+        taskDiv.innerHTML = `
+            <div class="task-details">
+                <h3>${taskData.taskName}</h3>
+                <p>${taskData.taskDescription}</p>
+                <p>${taskData.taskDateTime}</p>
+            </div>
+            <div class="task-buttons">
+                <button class="edit-btn">Edit</button>
+                <button class="complete-btn">Complete</button>
+            </div>
+        `;
+
+        // Attach event listeners to the task buttons
+        const editBtn = taskDiv.querySelector(".edit-btn");
+        editBtn.addEventListener("click", () => editTask(taskDiv));
+
+        const completeBtn = taskDiv.querySelector(".complete-btn");
+        completeBtn.addEventListener("click", () => completeTask(taskDiv));
+
+        taskList.appendChild(taskDiv);
     });
 });
 
-// Function to add a task to the UI
-function addTaskToUI(task) {
-    const taskDiv = document.createElement("div");
-    taskDiv.classList.add("task", task.priority);
-    taskDiv.innerHTML = `
-        <div class="task-details">
-            <h3>${task.name}</h3>
-            <p>${task.description}</p>
-            <p>${task.dateTime}</p>
-        </div>
-        <div class="task-buttons">
-            <button class="edit-btn">Edit</button>
-            <button class="complete-btn">Complete</button>
-        </div>
-    `;
+// Save tasks to local storage when a task is added or edited
+function saveTasksToLocalStorage() {
+    const tasks = [];
 
-    const editBtn = taskDiv.querySelector(".edit-btn");
-    editBtn.addEventListener("click", () => editTask(taskDiv));
+    // Loop through all task divs and save their data
+    const taskDivs = taskList.querySelectorAll(".task");
+    taskDivs.forEach(taskDiv => {
+        const taskDetails = taskDiv.querySelector(".task-details");
+        const taskName = taskDetails.querySelector("h3").textContent;
+        const taskDescription = taskDetails.querySelectorAll("p")[0].textContent;
+        const taskDateTime = taskDetails.querySelectorAll("p")[1].textContent;
+        const taskPriority = taskDiv.classList[1]; // Get priority class
 
-    const completeBtn = taskDiv.querySelector(".complete-btn");
-    completeBtn.addEventListener("click", () => completeTask(taskDiv));
-
-    taskList.appendChild(taskDiv);
-}
-
-// Function to get the tasks stored in Local Storage
-function getTasksFromLocalStorage() {
-    const tasksJSON = localStorage.getItem("tasks");
-    return tasksJSON ? JSON.parse(tasksJSON) : [];
-}
-
-// Function to save tasks in Local Storage
-function updateLocalStorage() {
-    const tasks = Array.from(taskList.children).map(taskDiv => {
-        return {
-            name: taskDiv.querySelector(".task-details h3").textContent,
-            description: taskDiv.querySelector(".task-details p:nth-child(2)").textContent,
-            dateTime: taskDiv.querySelector(".task-details p:nth-child(3)").textContent,
-            priority: taskDiv.classList[1],
-        };
+        tasks.push({
+            taskName,
+            taskDescription,
+            taskDateTime,
+            taskPriority,
+        });
     });
 
+    // Save the tasks array to local storage
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
+
+// Add event listeners to input fields to save tasks on change
+taskNameInput.addEventListener("change", saveTasksToLocalStorage);
+taskDescriptionInput.addEventListener("change", saveTasksToLocalStorage);
+taskDateTimeInput.addEventListener("change", saveTasksToLocalStorage);
+taskPriorityInput.addEventListener("change", saveTasksToLocalStorage);
