@@ -87,6 +87,26 @@ section {
     margin-bottom: 0.2rem;
 }
 
+/* Task buttons */
+.task .task-buttons button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.task .task-buttons button.edit-btn {
+    background-color: #fff;
+    color: #333;
+}
+
+.task .task-buttons button.complete-btn {
+    background-color: #fff;
+    color: #333;
+}
+
 /* Priority color coding */
 .urgent { background-color: #ff6b6b; }
 .important { background-color: #ffc107; }
