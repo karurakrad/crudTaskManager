@@ -3,35 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Task CRUD</title>
     <link rel="stylesheet" href="styles.css">
-    <title>Task Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
         <h1>Task Manager</h1>
     </header>
     <section class="task-section">
-        <div class="container">
-            <div class="task-form">
-                <!-- Form to add tasks -->
-                <input type="text" id="taskName" placeholder="Task Name">
-                <input type="text" id="taskDescription" placeholder="Task Description">
-                <input type="datetime-local" id="taskDateTime">
-                <select id="taskPriority">
-                    <option value="red">Urgent</option>
-                    <option value="yellow">Important</option>
-                    <option value="green">Pending</option>
-                </select>
-                <button id="addTask">Add Task</button>
-            </div>
-            <div class="task-list">
-                <!-- Task list will be displayed here -->
-            </div>
+        <div class="task-form">
+            <h2>Add New Task</h2>
+            <input type="text" id="taskName" placeholder="Task Name">
+            <textarea id="taskDescription" placeholder="Task Description"></textarea>
+            <input type="datetime-local" id="taskDateTime">
+            <select id="taskPriority">
+                <option value="urgent">Urgent</option>
+                <option value="important">Important</option>
+                <option value="pending">Pending</option>
+            </select>
+            <button id="addTaskBtn">Add Task</button>
+        </div>
+        <div class="task-list" id="taskList">
+            <!-- Tasks will be dynamically added here -->
         </div>
     </section>
     <footer>
-        <p>&copy; 2023 Task Manager App</p>
+        <p>&copy; 2023 Task Manager</p>
     </footer>
     <script src="script.js"></script>
 </body>
