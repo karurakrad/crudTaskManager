@@ -1,76 +1,67 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const taskForm = document.querySelector(".task-form");
-    const taskList = document.querySelector(".task-list");
+// Get elements from the DOM
+const taskNameInput = document.getElementById("taskName");
+const taskDescriptionInput = document.getElementById("taskDescription");
+const taskDateTimeInput = document.getElementById("taskDateTime");
+const taskPriorityInput = document.getElementById("taskPriority");
+const addTaskBtn = document.getElementById("addTaskBtn");
+const taskList = document.getElementById("taskList");
 
-    const tasks = [];
+// Event listener for adding tasks
+addTaskBtn.addEventListener("click", addTask);
 
-    function renderTasks() {
-        taskList.innerHTML = "";
-        if (tasks.length === 0) {
-            taskList.innerHTML = "<p>No tasks yet.</p>";
-        } else {
-            tasks.forEach((task, index) => {
-                const taskItem = document.createElement("div");
-                taskItem.classList.add("task");
-                taskItem.style.borderColor = task.priority;
+// Add a new task to the list
+function addTask() {
+    const taskName = taskNameInput.value;
+    const taskDescription = taskDescriptionInput.value;
+    const taskDateTime = taskDateTimeInput.value;
+    const taskPriority = taskPriorityInput.value;
 
-                const taskInfo = document.createElement("div");
-                taskInfo.innerHTML = `
-                    <p><strong>Name:</strong> ${task.name}</p>
-                    <p><strong>Description:</strong> ${task.description}</p>
-                    <p><strong>Date & Time:</strong> ${task.dateTime}</p>
-                `;
-
-                const actions = document.createElement("div");
-                actions.classList.add("actions");
-                actions.innerHTML = `
-                    <button class="btn btn-success btn-sm" data-index="${index}">Complete</button>
-                    <button class="btn btn-primary btn-sm" data-index="${index}">Edit</button>
-                    <button class="btn btn-danger btn-sm" data-index="${index}">Delete</button>
-                `;
-
-                taskItem.appendChild(taskInfo);
-                taskItem.appendChild(actions);
-                taskList.appendChild(taskItem);
-            });
-        }
+    if (!taskName || !taskDateTime) {
+        alert("Please fill in both task name and date/time.");
+        return;
     }
 
-    taskForm.addEventListener("submit", function (event) {
-        event.preventDefault();
+    const taskDiv = document.createElement("div");
+    taskDiv.classList.add("task", taskPriority);
+    taskDiv.innerHTML = `
+        <div class="task-details">
+            <h3>${taskName}</h3>
+            <p>${taskDescription}</p>
+            <p>${taskDateTime}</p>
+        </div>
+        <div class="task-buttons">
+            <button class="edit-btn">Edit</button>
+            <button class="complete-btn">Complete</button>
+        </div>
+    `;
 
-        const taskName = document.getElementById("taskName").value;
-        const taskDescription = document.getElementById("taskDescription").value;
-        const taskDateTime = document.getElementById("taskDateTime").value;
-        const taskPriority = document.getElementById("taskPriority").value;
+    // Attach event listeners to the task buttons
+    const editBtn = taskDiv.querySelector(".edit-btn");
+    editBtn.addEventListener("click", () => editTask(taskDiv));
 
-        tasks.push({
-            name: taskName,
-            description: taskDescription,
-            dateTime: taskDateTime,
-            priority: taskPriority
-        });
+    const completeBtn = taskDiv.querySelector(".complete-btn");
+    completeBtn.addEventListener("click", () => completeTask(taskDiv));
 
-        renderTasks();
+    taskList.appendChild(taskDiv);
 
-        // Reset form fields
-        taskForm.reset();
-    });
+    // Clear input fields
+    taskNameInput.value = "";
+    taskDescriptionInput.value = "";
+    taskDateTimeInput.value = "";
+    taskPriorityInput.value = "urgent";
+}
 
-    taskList.addEventListener("click", function (event) {
-        if (event.target.classList.contains("btn-danger")) {
-            const index = event.target.getAttribute("data-index");
-            tasks.splice(index, 1);
-            renderTasks();
-        } else if (event.target.classList.contains("btn-success")) {
-            const index = event.target.getAttribute("data-index");
-            tasks.splice(index, 1);
-            renderTasks();
-        } else if (event.target.classList.contains("btn-primary")) {
-            const index = event.target.getAttribute("data-index");
-            // Pendant to implement edit functionality
-        }
-    });
+// Edit a task
+function editTask(taskDiv) {
+    // Pending to implement task editing logic here
+}
 
-    renderTasks();
+// Complete a task
+function completeTask(taskDiv) {
+    taskList.removeChild(taskDiv);
+}
+
+// Load saved tasks on page load (if available)
+window.addEventListener("load", () => {
+    // Pending to implement task loading logic here
 });
