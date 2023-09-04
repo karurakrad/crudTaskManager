@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <title>Task Manager</title>
+</head>
+<body>
+    <header>
+        <h1>Task Manager</h1>
+    </header>
+    <section class="task-section">
+        <div class="container">
+            <div class="task-form">
+                <!-- Form to add tasks -->
+                <input type="text" id="taskName" placeholder="Task Name">
+                <input type="text" id="taskDescription" placeholder="Task Description">
+                <input type="datetime-local" id="taskDateTime">
+                <select id="taskPriority">
+                    <option value="red">Urgent</option>
+                    <option value="yellow">Important</option>
+                    <option value="green">Pending</option>
+                </select>
+                <button id="addTask">Add Task</button>
+            </div>
+            <div class="task-list">
+                <!-- Task list will be displayed here -->
+            </div>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2023 Task Manager App</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
