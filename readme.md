@@ -15,7 +15,7 @@ https://github.com/karurakrad/landingnegocio/blob/main/assets/prototipado.jpg
 
 ## Demo
 
-https://karurakrad.github.io/landingnegocio/
+https://karurakrad.github.io/crudTaskManager/
 
 ## Features
 
