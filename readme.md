@@ -5,9 +5,6 @@ This project is a Task Manager (CRUD) developed using HTML, CSS, and JavaScript.
 
 As for the creative idea, it is intended to work as a visual portfolio for an interior design studio so that it is as clean as possible and with cool colors to highlight the images presented.
 
-Here you can see the simple prototype of the project.
-https://github.com/karurakrad/landingnegocio/blob/main/assets/prototipado.jpg
-
 ## Authors
 
 - [@karurakrad](https://github.com/karurakrad)
